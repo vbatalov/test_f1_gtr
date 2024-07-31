@@ -5,8 +5,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      */
@@ -15,9 +14,9 @@ return new class extends Migration
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
             $table->string("customer");
-            $table->timestamp("completed_at");
+            $table->timestamp("completed_at")->nullable();
             $table->foreignId("warehouse_id")->constrained("warehouses")->nullOnDelete();
-            $table->enum("status", StatusEnum::toArray());
+            $table->enum("status", StatusEnum::toArray())->default(StatusEnum::ACTIVE);
             $table->timestamps();
         });
     }
