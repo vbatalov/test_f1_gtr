@@ -4,7 +4,6 @@ namespace App\Http\Resources\Product;
 
 use App\Http\Resources\Stock\StockResource;
 use App\Models\Product;
-use App\Models\Stock;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 

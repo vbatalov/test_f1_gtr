@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\Order\CreateOrder;
+use App\Http\Controllers\Api\Order\FilterOrder;
 use App\Http\Controllers\Api\Order\GetOrders;
 use App\Http\Controllers\Api\Order\UpdateOrder;
 use App\Http\Controllers\Api\Product\GetProductWithStock;
@@ -12,10 +13,11 @@ Route::middleware(ReturnJsonResponse::class)->group(function () {
         Route::get("orders", GetOrders::class)->name("get-orders");
         Route::post("create", CreateOrder::class)->name("create-order");
         Route::put("update", UpdateOrder::class)->name("update-order");
+        Route::get("filter", FilterOrder::class)->name("filter-order");
     });
 
     Route::prefix("product")->group(function () {
-        Route::get("products-with-stock", GetProductWithStock::class)->name("get-product-with-stock");
+        Route::get("stock", GetProductWithStock::class)->name("product-stock");
     });
 });
 
