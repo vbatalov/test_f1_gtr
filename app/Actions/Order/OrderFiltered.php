@@ -34,6 +34,6 @@ readonly class OrderFiltered
                 }
             })
             ->orderBy("completed_at", $filter['orderBy'] ?? "asc")
-            ->get();
+            ->paginate($filter['paginate']);
     }
 }

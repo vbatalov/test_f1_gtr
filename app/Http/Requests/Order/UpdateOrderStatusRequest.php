@@ -1,13 +1,13 @@
 <?php
 
-namespace App\Http\Requests\Items;
+namespace App\Http\Requests\Order;
 
+use App\Enums\StatusEnum;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
-class ItemsRequest extends FormRequest
+class UpdateOrderStatusRequest extends FormRequest
 {
-
     /**
      * Get the validation rules that apply to the request.
      *
@@ -16,15 +16,11 @@ class ItemsRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "products" => [
-                "array", "required",
-            ],
-            "products.*.id" => [
+            "id" => [
                 "required",
-                Rule::exists("products", "id"),
-                Rule::exists("stocks", "product_id"),
+                "int",
+                Rule::exists("orders", "id")
             ],
-            "products.*.count" => "required|integer|min:1",
         ];
     }
 }

@@ -2,18 +2,24 @@
 
 namespace App\Actions\Order;
 
+use App\Actions\Items\ItemsCreator;
 use App\Http\Requests\Order\CreateOrderRequest;
 use App\Models\Order;
 
 
-class OrderCreator
+readonly class OrderCreator
 {
-    public function __construct(private CreateOrderRequest $request)
+    public function __construct(private readonly CreateOrderRequest $request, private readonly ItemsCreator $itemsCreator)
     {
     }
 
     public function store()
     {
-        return Order::create($this->request->all())->refresh();
+        $order = Order::create($this->request->all());
+        $this->itemsCreator->store($order);
+
+        return $order->refresh();
     }
+
+
 }

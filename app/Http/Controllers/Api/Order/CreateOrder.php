@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Api\Order;
 
-use App\Actions\Items\ItemsCreator;
 use App\Actions\Order\OrderCreator;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Items\ItemsRequest;
@@ -14,13 +13,13 @@ use Symfony\Component\HttpFoundation\Response;
 
 class CreateOrder extends Controller
 {
-    public function __invoke(CreateOrderRequest $orderRequest, ItemsRequest $itemsRequest, OrderCreator $orderCreator, ItemsCreator $itemsCreator)
+    public function __invoke(CreateOrderRequest $orderRequest, ItemsRequest $itemsRequest, OrderCreator $orderCreator)
     {
         $order = $orderCreator->store();
-        $items = $itemsCreator->store($order);
+
         return new JsonResponse([
             "order" => OrderResource::make($order),
-            "items" => ItemResource::collection($items),
+            "items" => ItemResource::collection($order->items),
         ], Response::HTTP_CREATED);
     }
 }

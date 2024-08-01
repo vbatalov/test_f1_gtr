@@ -2,11 +2,12 @@
 
 namespace App\Actions\Items;
 
+use App\Actions\Order\OrderStock;
 use App\Http\Requests\Items\ItemsRequest;
 use App\Models\Order;
 use App\Models\OrderItem;
 
-class ItemsCreator
+readonly class ItemsCreator
 {
     public function __construct(private ItemsRequest $request)
     {
@@ -14,6 +15,8 @@ class ItemsCreator
 
     public function store(Order $order)
     {
+        $this->prepend();
+
         foreach ($this->request->post("products") as $product) {
             OrderItem::create([
                 "order_id" => $order->id,
@@ -21,7 +24,15 @@ class ItemsCreator
                 "count" => $product['count']
             ]);
         }
+    }
 
-        return OrderItem::whereOrderId($order->id)->get();
+    private function prepend(): void
+    {
+        $warehouse_id = $this->request->get("warehouse_id");
+        $products = $this->request->validated()['products'];
+
+
+        OrderStock::check_stock($warehouse_id, $products);
+        OrderStock::write_off($warehouse_id, $products);
     }
 }

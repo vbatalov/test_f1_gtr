@@ -36,6 +36,7 @@ class FilterOrderRequest extends FormRequest
                 Rule::enum(StatusEnum::class),
                 "required_without_all:id,orderBy,customer"
             ],
+            "paginate" => "required|integer|min:1"
         ];
     }
 }

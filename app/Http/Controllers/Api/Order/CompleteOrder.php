@@ -9,12 +9,10 @@ use App\Http\Resources\Order\OrderResource;
 use Illuminate\Http\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 
-class CancelOrder extends Controller
+class CompleteOrder extends Controller
 {
     public function __invoke(UpdateOrderStatusRequest $request, OrderStatusUpdater $orderStatusUpdater)
     {
-        $order = $orderStatusUpdater->cancel();
-
-        return new JsonResponse(OrderResource::make($order), Response::HTTP_OK);
+        return new JsonResponse(OrderResource::make($orderStatusUpdater->complete()), Response::HTTP_OK);
     }
 }

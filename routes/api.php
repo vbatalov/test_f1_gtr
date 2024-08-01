@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\Api\Order\CancelOrder;
+use App\Http\Controllers\Api\Order\CompleteOrder;
 use App\Http\Controllers\Api\Order\CreateOrder;
 use App\Http\Controllers\Api\Order\FilterOrder;
 use App\Http\Controllers\Api\Order\GetOrders;
@@ -14,6 +16,8 @@ Route::middleware(ReturnJsonResponse::class)->group(function () {
         Route::post("create", CreateOrder::class)->name("create-order");
         Route::put("update", UpdateOrder::class)->name("update-order");
         Route::get("filter", FilterOrder::class)->name("filter-order");
+        Route::patch("complete", CompleteOrder::class)->name("complete-order");
+        Route::patch("cancel", CancelOrder::class)->name("cancel-order");
     });
 
     Route::prefix("product")->group(function () {
