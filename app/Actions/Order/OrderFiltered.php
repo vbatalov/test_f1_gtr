@@ -5,6 +5,7 @@ namespace App\Actions\Order;
 use App\Http\Requests\Order\FilterOrderRequest;
 use App\Models\Order;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 
 
 readonly class OrderFiltered
