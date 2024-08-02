@@ -4,26 +4,32 @@ namespace App\Http\Controllers\Api\Order;
 
 use App\Actions\Items\ItemsUpdater;
 use App\Actions\Order\OrderUpdater;
+use App\DTOs\OrderDTO;
+use App\DTOs\ProductDTO;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Items\ItemsRequest;
 use App\Http\Requests\Order\UpdateOrderRequest;
-use App\Models\Order;
-use Illuminate\Http\JsonResponse;
+use App\Http\Resources\Item\ItemResource;
+use App\Http\Resources\Order\OrderResource;
+use App\Http\Resources\Product\ProductResource;
 use Symfony\Component\HttpFoundation\Response;
+use WendellAdriel\ValidatedDTO\Exceptions\CastTargetException;
+use WendellAdriel\ValidatedDTO\Exceptions\MissingCastTypeException;
 
 class UpdateOrder extends Controller
 {
-    public function __invoke(UpdateOrderRequest $updateOrderRequest, ItemsRequest $itemsRequest, OrderUpdater $orderUpdater, ItemsUpdater $itemsUpdater)
+    /**
+     * @throws CastTargetException
+     * @throws MissingCastTypeException
+     */
+    public function __invoke(UpdateOrderRequest $updateOrderRequest, ProductDTO $productDTO, OrderUpdater $orderUpdater, ItemsUpdater $itemsUpdater)
     {
-        // init order
-        $order = Order::find($updateOrderRequest->get("id"));
+        $orderDTO = OrderDTO::fromRequest($updateOrderRequest);
 
-        // update order_items
-        $itemsUpdater->update($order);
+        $order = $orderUpdater->update($orderDTO, $productDTO);
 
-        // update order
-        $orderUpdater->update();
-
-        return new JsonResponse([], Response::HTTP_OK);
+        return \response()->json([
+            OrderResource::make($order),
+            ItemResource::collection($order->items)
+        ], Response::HTTP_OK);
     }
 }

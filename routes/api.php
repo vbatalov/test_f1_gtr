@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\Order\CompleteOrder;
 use App\Http\Controllers\Api\Order\CreateOrder;
 use App\Http\Controllers\Api\Order\FilterOrder;
 use App\Http\Controllers\Api\Order\GetOrders;
+use App\Http\Controllers\Api\Order\ResumeOrder;
 use App\Http\Controllers\Api\Order\UpdateOrder;
 use App\Http\Controllers\Api\Product\GetProductWithStock;
 use App\Http\Middleware\ReturnJsonResponse;
@@ -18,6 +19,7 @@ Route::middleware(ReturnJsonResponse::class)->group(function () {
         Route::get("filter", FilterOrder::class)->name("filter-order");
         Route::patch("complete", CompleteOrder::class)->name("complete-order");
         Route::patch("cancel", CancelOrder::class)->name("cancel-order");
+        Route::patch("resume", ResumeOrder::class)->name("resume-order");
     });
 
     Route::prefix("product")->group(function () {

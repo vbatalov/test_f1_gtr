@@ -2,14 +2,11 @@
 
 namespace App\Http\Requests\Order;
 
-use App\Actions\Order\OrderStock;
-use App\Models\Order;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
-class UpdateOrderStatusRequest extends FormRequest
+class ResumeOrderRequest extends FormRequest
 {
-
     /**
      * Get the validation rules that apply to the request.
      *
@@ -19,10 +16,9 @@ class UpdateOrderStatusRequest extends FormRequest
     {
         return [
             "id" => [
-                "required",
-                "int",
-                Rule::exists("orders", "id")
-            ],
+                "required", "int",
+                Rule::exists("orders", "id"),
+            ]
         ];
     }
 }

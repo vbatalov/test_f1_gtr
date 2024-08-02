@@ -4,7 +4,6 @@ namespace App\Actions\Order;
 
 use App\Models\Order;
 use App\Models\Stock;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
 readonly class OrderStock
@@ -15,17 +14,18 @@ readonly class OrderStock
             $stock = Stock::where([
                 "product_id" => $product['id'],
                 "warehouse_id" => $warehouse_id
-            ])->firstOrFail();
+            ])->first();
 
-            if ($stock->stock < $product['count']) {
+//            dump($products);
+            if (is_null($stock) or ($stock->stock < $product['count'])) {
                 throw ValidationException::withMessages([
-                    "Количество товара [ID: {$product['id']}] больше, чем доступное количество ($stock->stock)"
+                    "Товар [ID: {$product['id']}] отсутствует на складе [ID: $warehouse_id]"
                 ]);
             }
         }
     }
 
-    public static function write_off(int $warehouse_id, array $products)
+    public static function write_off(int $warehouse_id, array $products): void
     {
         foreach ($products as $product) {
             $stock = Stock::where([
@@ -41,14 +41,19 @@ readonly class OrderStock
         }
     }
 
-    public static function return_stock(Order $order)
+    public static function return_stock(Order $order): void
     {
-        $items = $order->items;
+        $warehouse_id = $order->warehouse_id;
 
-        foreach ($items as $item) {
-            $order->join("");
+        foreach ($order->items as $item) {
+            $stock = Stock::where([
+                "warehouse_id" => $warehouse_id,
+                "product_id" => $item['product_id'],
+            ])->firstOrFail();
 
-            dd($order);
+            $stock->update([
+                "stock" => $stock->stock + $item['count']
+            ]);
         }
     }
 }

@@ -3,21 +3,25 @@
 namespace App\Actions\Items;
 
 use App\Actions\Order\OrderStock;
-use App\Http\Requests\Items\ItemsRequest;
+use App\DTOs\OrderDTO;
+use App\DTOs\ProductDTO;
 use App\Models\Order;
 use App\Models\OrderItem;
 
 readonly class ItemsCreator
 {
-    public function __construct(private ItemsRequest $request)
+    public function __construct()
     {
     }
 
-    public function store(Order $order)
+    public function store(OrderDTO $orderDTO, ProductDTO $productDTO): void
     {
-        $this->prepend();
+        $order = Order::findOrFail($orderDTO->id);
 
-        foreach ($this->request->post("products") as $product) {
+        OrderStock::check_stock(warehouse_id: $order->warehouse_id, products: $productDTO->products);
+        OrderStock::write_off(warehouse_id: $order->warehouse_id, products: $productDTO->products);
+
+        foreach ($productDTO->products as $product) {
             OrderItem::create([
                 "order_id" => $order->id,
                 "product_id" => $product['id'],
@@ -26,13 +30,5 @@ readonly class ItemsCreator
         }
     }
 
-    private function prepend(): void
-    {
-        $warehouse_id = $this->request->get("warehouse_id");
-        $products = $this->request->validated()['products'];
 
-
-        OrderStock::check_stock($warehouse_id, $products);
-        OrderStock::write_off($warehouse_id, $products);
-    }
 }

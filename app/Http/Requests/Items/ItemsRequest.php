@@ -19,12 +19,12 @@ class ItemsRequest extends FormRequest
             "products" => [
                 "array", "required",
             ],
-            "products.*.id" => [
-                "required",
-                Rule::exists("products", "id"),
-                Rule::exists("stocks", "product_id"),
-            ],
-            "products.*.count" => "required|integer|min:1",
+//            "products.*.id" => [
+//                "required",
+//                Rule::exists("products", "id"),
+//                Rule::exists("stocks", "product_id"),
+//            ],
+//            "products.*.count" => "required|integer|min:1",
         ];
     }
 }

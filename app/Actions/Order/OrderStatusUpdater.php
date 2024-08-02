@@ -2,6 +2,7 @@
 
 namespace App\Actions\Order;
 
+use App\DTOs\OrderDTO;
 use App\Enums\StatusEnum;
 use App\Http\Requests\Order\UpdateOrderStatusRequest;
 use App\Models\Order;
@@ -40,19 +41,45 @@ readonly class OrderStatusUpdater
     {
         $order = Order::findOrFail($this->request->validated()['id']);
 
-        DB::transaction(function () use ($order) {
-            if ($order->status == StatusEnum::COMPLETED) {
-                throw ValidationException::withMessages([
-                    "Завершенный заказ нельзя отменить"
-                ]);
-            }
-            OrderStock::return_stock($order);
-        });
+        if (($order->status != StatusEnum::ACTIVE)) {
+            throw ValidationException::withMessages([
+                "Отменить можно только активный заказ"
+            ]);
+        }
+        OrderStock::return_stock($order);
 
-
-        return $order->update([
+        $order->update([
             "status" => StatusEnum::CANCELED
         ]);
 
+        return $order;
+    }
+
+    public function resume(OrderDTO $orderDTO): Order
+    {
+        $order = Order::findOrFail($orderDTO->id);
+
+        if ($order->status != StatusEnum::CANCELED) {
+            throw ValidationException::withMessages([
+                "Вернуть заказ в работу можно только в статусе отменен."
+            ]);
+        }
+
+        $products = [];
+        foreach ($order->items->toArray() as $item) {
+            $products [] = [
+                "id" => $item['product_id'],
+                "count" => $item['count']
+            ];
+        }
+
+        OrderStock::check_stock(warehouse_id: $order->warehouse_id, products: $products);
+        OrderStock::write_off(warehouse_id: $order->warehouse_id, products: $products);
+
+        $order->update([
+            "status" => StatusEnum::ACTIVE
+        ]);
+
+        return $order;
     }
 }

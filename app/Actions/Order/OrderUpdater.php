@@ -2,20 +2,26 @@
 
 namespace App\Actions\Order;
 
-use App\Http\Requests\Order\UpdateOrderRequest;
+use App\Actions\Items\ItemsUpdater;
+use App\DTOs\OrderDTO;
+use App\DTOs\ProductDTO;
 use App\Models\Order;
+use Illuminate\Support\Facades\DB;
 
 readonly class OrderUpdater
 {
-    public function __construct(private UpdateOrderRequest $request)
+    public function update(OrderDTO $orderDTO, ProductDTO $productDTO): Order
     {
-    }
-
-    public function update(): void
-    {
-        Order::find($this->request->validated(['id']))
-            ->update([
-                $this->request->validated()
+        return DB::transaction(function () use ($orderDTO, $productDTO) {
+            $order = Order::find($orderDTO->id);
+            $order->update([
+                "customer" => $orderDTO->customer,
             ]);
+
+            ItemsUpdater::update_items($orderDTO, $productDTO);
+
+            return $order;
+        });
+
     }
 }
