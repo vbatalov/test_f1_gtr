@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\Order\GetOrders;
 use App\Http\Controllers\Api\Order\ResumeOrder;
 use App\Http\Controllers\Api\Order\UpdateOrder;
 use App\Http\Controllers\Api\Product\GetProductWithStock;
+use App\Http\Controllers\Api\Stock\HistoryStock;
 use App\Http\Middleware\ReturnJsonResponse;
 use Illuminate\Support\Facades\Route;
 
@@ -20,6 +21,10 @@ Route::middleware(ReturnJsonResponse::class)->group(function () {
         Route::patch("complete", CompleteOrder::class)->name("complete-order");
         Route::patch("cancel", CancelOrder::class)->name("cancel-order");
         Route::patch("resume", ResumeOrder::class)->name("resume-order");
+    });
+
+    Route::prefix("history")->group(function () {
+        Route::get("stocks", HistoryStock::class)->name("history-stock");
     });
 
     Route::prefix("product")->group(function () {
